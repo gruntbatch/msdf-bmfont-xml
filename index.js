@@ -88,6 +88,7 @@ function generateBMFont (fontPath, opt, callback) {
   let filename = utils.valueQueue([opt.filename, reuse.filename]);
   let textureDir = utils.valueQueue([opt.textureDir, reuse.textureDir, fontDir]);
   let metaDir = utils.valueQueue([opt.metaDir, reuse.metaDir, fontDir]);
+  const metaExt = utils.valueQueue([opt.metaExt, reuse.metaExt]);
   const fontSize = opt.fontSize = utils.valueQueue([opt.fontSize, reuse.fontSize, 42]);
   const fontSpacing = opt.fontSpacing = utils.valueQueue([opt.fontSpacing, reuse.fontSpacing, [0, 0]]);
   const fontPadding = opt.fontPadding = utils.valueQueue([opt.fontPadding, reuse.fontPadding, [0, 0, 0, 0]]);
@@ -281,8 +282,8 @@ function generateBMFont (fontPath, opt, callback) {
     };
     if(roundDecimal !== null) utils.roundAllValue(fontData, roundDecimal, true);
     let fontFile = {};
-    const ext = outputType === "json" ? `.json` : `.fnt`;
-    fontFile.filename = path.join(metaDir, fontface + ext);
+    const ext = metaExt || (outputType === "json" ? `json` : `fnt`);
+    fontFile.filename = path.join(metaDir, `${fontface}.${ext}`);
     fontFile.data = utils.stringify(fontData, outputType);
 
     // Store pages name and available packer freeRects in settings
