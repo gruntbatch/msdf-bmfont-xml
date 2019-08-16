@@ -16,6 +16,8 @@ args
   .description('Creates a BMFont compatible bitmap font of signed distance fields from a font file')
   .option('-f, --output-type <format>', 'font file format: xml(default) | json', /^(xml|json)$/i, 'xml')
   .option('-o, --filename <atlas_path>', 'filename of font textures (defaut: font-face) font filename always set to font-face name')
+  .option('    --texture-dir <tex_dir>', 'directory of font textures (defaut: font-face) font filename always set to font-face name')
+  .option('    --meta-dir <meta_dir>', 'directory of font meta-data (default: font-face)')
   .option('-s, --font-size <fontSize>', 'font size for generated textures (default: 42)', 42)
   .option('-i, --charset-file <charset>', 'user-specified charactors from text-file', fileExistValidate)
   .option('-m, --texture-size <w,h>', 'ouput texture atlas size (defaut: 2048,2048)', (v) => {return v.split(',')}, [2048, 2048])
@@ -55,6 +57,8 @@ const fontDir = path.dirname(fontFile);
 //
 opt.fontFile = fontFile;
 opt.filename = utils.valueQueue([opt.filename, path.join(fontDir, fontface)]);
+opt.textureDir = utils.valueQueue([opt.textureDir, fontDir]);
+opt.metaDir = utils.valueQueue([opt.metaDir, fontDir]);
 opt.vector = utils.valueQueue([opt.vector, false]);
 opt.reuse = utils.valueQueue([opt.reuse, false]);
 opt.smartSize = utils.valueQueue([opt.smartSize, false]);

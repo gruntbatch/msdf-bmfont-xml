@@ -86,6 +86,8 @@ function generateBMFont (fontPath, opt, callback) {
   } else reuse = {};
   const outputType = opt.outputType = utils.valueQueue([opt.outputType, reuse.outputType, "xml"]);
   let filename = utils.valueQueue([opt.filename, reuse.filename]);
+  let textureDir = utils.valueQueue([opt.textureDir, reuse.textureDir, fontDir]);
+  let metaDir = utils.valueQueue([opt.metaDir, reuse.metaDir, fontDir]);
   const fontSize = opt.fontSize = utils.valueQueue([opt.fontSize, reuse.fontSize, 42]);
   const fontSpacing = opt.fontSpacing = utils.valueQueue([opt.fontSpacing, reuse.fontSpacing, [0, 0]]);
   const fontPadding = opt.fontPadding = utils.valueQueue([opt.fontPadding, reuse.fontPadding, [0, 0, 0, 0]]);
@@ -136,7 +138,10 @@ function generateBMFont (fontPath, opt, callback) {
     filename = fontface;
     console.log(`Use font-face as filename : ${filename}`);
   } else {
-    if (opt.filename) fontDir = path.dirname(opt.filename);
+    if (opt.filename) {
+      if (!textureDir) textureDir = path.dirname(opt.filename);
+      if (!metaDir) metaDir = textureDir;
+    }
     filename = opt.filename = path.basename(filename, path.extname(filename));
   }
 
@@ -189,7 +194,7 @@ function generateBMFont (fontPath, opt, callback) {
         pages.push(`${texname}.png`);
       } else {
         texname = path.basename(pages[index], path.extname(pages[index]));
-        let imgPath = path.join(fontDir, `${texname}.png`);
+        let imgPath = path.join(textureDir, `${texname}.png`);
         console.log('Loading previous image : ', imgPath);
         const loader = Jimp.read(imgPath);
         loader.catch(err => {
@@ -217,7 +222,7 @@ function generateBMFont (fontPath, opt, callback) {
       });
       const buffer = await img.getBufferAsync(Jimp.MIME_PNG);
       let tex = {
-        filename: path.join(fontDir, texname),
+        filename: path.join(textureDir, texname),
         texture: buffer 
       }
       if (debug) tex.svg = svg;
@@ -277,7 +282,7 @@ function generateBMFont (fontPath, opt, callback) {
     if(roundDecimal !== null) utils.roundAllValue(fontData, roundDecimal, true);
     let fontFile = {};
     const ext = outputType === "json" ? `.json` : `.fnt`;
-    fontFile.filename = path.join(fontDir, fontface + ext);
+    fontFile.filename = path.join(metaDir, fontface + ext);
     fontFile.data = utils.stringify(fontData, outputType);
 
     // Store pages name and available packer freeRects in settings
